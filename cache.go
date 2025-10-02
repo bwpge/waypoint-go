@@ -40,7 +40,7 @@ func (c *cache) get(k string) (string, bool) {
 func (c *cache) set(k string, v string) {
 	item := cacheItem{
 		value:   v,
-		expires: time.Now().Unix() + 5,
+		expires: time.Now().Unix() + 300,
 	}
 
 	c.mu.Lock()

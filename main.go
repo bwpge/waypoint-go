@@ -48,7 +48,6 @@ func (h *Handler) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Debugf("cache miss: '%s'", k)
 	body, err := fetch(k)
 	if err != nil {
 		log.Errorf("failed to fetch '%s': %s", k, err.Error())
