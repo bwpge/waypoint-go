@@ -1,0 +1,13 @@
+Source: waypoint
+Section: web
+Priority: optional
+Maintainer: bwpge <bwpge.dev@gmail.com>
+Build-Depends: debhelper-compat (= 13), golang-go (>= 2:1.24~2)
+Standards-Version: 4.6.0
+
+Package: waypoint
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: simple caching and redirect backend
+ waypoint is primarily a learning exercise on multiple topics,
+ including learning golang and packaging for debian systems.

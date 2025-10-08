@@ -1,0 +1,3 @@
+build/waypoint /usr/bin/
+waypoint.yml /etc/waypoint/
+waypoint.service /usr/lib/systemd/system/

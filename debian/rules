@@ -1,0 +1,19 @@
+#!/usr/bin/make -f
+
+DHGOCACHE ?= $(shell go env GOCACHE)
+DHGOMODCACHE ?= $(shell go env GOMODCACHE)
+export GOCACHE=$(DHGOCACHE)
+export GOMODCACHE=$(DHGOMODCACHE)
+
+%:
+	dh $@
+
+# fix dwz compression issue with go binaries and DWARF5
+# see:
+#   - https://bugs.launchpad.net/ubuntu/+source/telegraf/+bug/2002369
+#   - https://bugs-devel.debian.org/cgi-bin/bugreport.cgi?bug=1016936
+override_dh_dwz:
+	dh_dwz -a -Xwaypoint
+
+override_dh_strip:
+	dh_strip --no-automatic-dbgsym
