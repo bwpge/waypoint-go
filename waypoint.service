@@ -3,7 +3,7 @@ Description=A simple caching and redirect backend
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/waypoint -h 127.0.0.1 -p 8081
+ExecStart=/usr/bin/waypoint
 
 [Install]
 WantedBy=multi-user.target
