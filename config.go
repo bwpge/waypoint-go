@@ -69,6 +69,11 @@ func loadConfig() (config, error) {
 
 	for k, v := range c {
 		item := configItem{url: v.URL, redir: v.Redir}
+
+		if item.url == "" {
+			return result, fmt.Errorf("error in config key '%s': a url is required", k)
+		}
+
 		for _, alias := range append(v.Alias, k) {
 			redir := ""
 			if item.redir {

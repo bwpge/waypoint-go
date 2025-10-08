@@ -1,0 +1,22 @@
+# This is a sample waypoint configuration file. Each KEY will map to an endpoint
+# on the backend to /KEY. The object is expected to have the following form:
+#
+# KEY:
+#   url: <string>
+#   redir: <bool>
+#   alias:
+#     - <string>
+#     - ...
+#
+# If `redir` is false (or ommitted), the content of the page will be returned
+# with a GET request. If `redir` is true, the request will be redirected with a
+# 302 response and the url verbatim as it appears in the config.
+#
+# Example:
+#
+#   foo:
+#     url: http://foo.bar/baz
+#     redir: true
+#     alias:
+#       - foo1
+#       - foo2
