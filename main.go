@@ -60,8 +60,8 @@ func (h *Handler) Handle(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	port := flag.UintP("port", "p", 8080, "port to listen on")
-	host := flag.StringP("host", "h", "", "IP address or hostname to bind")
+	port := flag.UintP("port", "p", 6920, "port to listen on")
+	host := flag.StringP("host", "h", "127.0.0.1", "IP address or hostname to bind")
 	confPath := flag.StringP("config", "c", "", "explicit config file path instead of defaults")
 	flag.Parse()
 
