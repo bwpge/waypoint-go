@@ -1,3 +1,16 @@
+waypoint (0.2.0-1) unstable; urgency=low
+
+  * Implement content items
+
+ -- bwpge <bwpge.dev@gmail.com>  Sat, 11 Oct 2025 20:58:13 -0400
+
+waypoint (0.1.1-1) unstable; urgency=low
+
+   * Update default arguments
+   * Update systemd unit
+
+ -- bwpge <bwpge.dev@gmail.com>  Wed, 08 Oct 2025 09:42:40 -0400
+
 waypoint (0.1.0-1) unstable; urgency=low
 
   * Initial release
