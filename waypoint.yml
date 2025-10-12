@@ -1,22 +1,37 @@
-# This is a sample waypoint configuration file. Each KEY will map to an endpoint
-# on the backend to /KEY. The object is expected to have the following form:
+# Options can be configured here or provided by command line argument.
+# Command line arguments take priority over this config.
+
+options:
+  host: 127.0.0.1
+  port: 6920
+
+# Each item will map to an endpoint on the backend at /KEY. The item object is
+# expected to have the following form:
 #
 # KEY:
+#   content: <string>
 #   url: <string>
 #   redir: <bool>
 #   alias:
 #     - <string>
 #     - ...
 #
-# If `redir` is false (or ommitted), the content of the page will be returned
-# with a GET request. If `redir` is true, the request will be redirected with a
-# 302 response and the url verbatim as it appears in the config.
+# Only content or url is required (content takes priority over url).
 #
-# Example:
-#
-#   foo:
-#     url: http://foo.bar/baz
-#     redir: true
-#     alias:
-#       - foo1
-#       - foo2
+# If `redir` is false (or ommitted), the content of the url will be returned
+# with a GET request. If `redir` is true, the request will be redirected with
+# a 302 response and the url verbatim as it appears in the config.
+
+items:
+  start:
+    content: >-
+      If you are seeing this, waypoint is properly configured and running.
+    alias:
+      - hello
+
+  waypoint:
+    url: http://localhost:6920/start
+    redir: true
+
+  readme:
+    url: https://raw.githubusercontent.com/bwpge/waypoint-go/refs/heads/main/README.md

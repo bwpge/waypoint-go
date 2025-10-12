@@ -53,3 +53,17 @@ func fetch(url string) (string, error) {
 
 	return string(bytes), nil
 }
+
+func extractIP(r *http.Request) string {
+	ip := r.Header.Get("X-Forwarded-For")
+	if ip != "" {
+		return strings.Split(ip, ",")[0]
+	}
+
+	ip = r.Header.Get("X-Real-IP")
+	if ip != "" {
+		return ip
+	}
+
+	return r.RemoteAddr
+}

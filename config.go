@@ -11,28 +11,32 @@ import (
 )
 
 type yamlItem struct {
-	URL   string   `json:"url"`
-	Redir bool     `json:"redir"`
-	Alias []string `json:"alias"`
+	Content string   `json:"content"`
+	URL     string   `json:"url"`
+	Redir   bool     `json:"redir"`
+	Alias   []string `json:"alias"`
 }
 
-type configItem struct {
-	url   string
-	redir bool
+type cliOptions struct {
+	Port uint   `json:"port"`
+	Host string `json:"host"`
 }
 
-type config map[string]configItem
+type yamlConfig struct {
+	Options cliOptions          `json:"options"`
+	Items   map[string]yamlItem `json:"items"`
+}
 
 var confPaths = []string{
-	"/etc/waypoint.yml",
-	"/etc/waypoint.yaml",
+	"/etc/waypoint/waypoint.yml",
+	"/etc/waypoint/waypoint.yaml",
 	"~/.config/waypoint.yml",
 	"~/.config/waypoint.yaml",
 	"waypoint.yml",
 	"waypoint.yaml",
 }
 
-func loadConfig() (config, error) {
+func loadConfig() (yamlConfig, error) {
 	filePath := ""
 	for _, f := range confPaths {
 		abs, err := filepath.Abs(expandTilde(f))
@@ -40,49 +44,34 @@ func loadConfig() (config, error) {
 			log.Warnf("could not determine absolute path for '%s'", f)
 			continue
 		}
-		f = abs
 
-		log.Debugf("looking for config: %s", f)
+		f = abs
 		if checkFile(f) == nil {
 			filePath = f
 			break
 		}
 	}
 
-	result := make(config)
+	c := yamlConfig{}
 	if filePath == "" {
 		log.Warn("no server config found")
-		return result, nil
+		return c, nil
 	}
 
 	log.Infof("loading server config: %s", filePath)
 	bytes, err := os.ReadFile(filePath)
 	if err != nil {
-		return result, fmt.Errorf("error reading config: %s", err)
+		return c, fmt.Errorf("error reading config: %s", err)
 	}
 
-	c := map[string]yamlItem{}
 	err = yaml.Unmarshal(bytes, &c)
 	if err != nil {
-		return result, fmt.Errorf("error deserializing config: %s", err)
+		return c, fmt.Errorf("error deserializing config: %s", err)
 	}
 
-	for k, v := range c {
-		item := configItem{url: v.URL, redir: v.Redir}
-
-		if item.url == "" {
-			return result, fmt.Errorf("error in config key '%s': a url is required", k)
-		}
-
-		for _, alias := range append(v.Alias, k) {
-			redir := ""
-			if item.redir {
-				redir = " (redirect)"
-			}
-			log.Debugf("setting key: %s => %s%s", alias, item.url, redir)
-			result[alias] = item
-		}
+	if len(c.Items) == 0 {
+		log.Warn("no items defined in server config")
 	}
 
-	return result, nil
+	return c, nil
 }
