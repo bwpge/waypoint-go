@@ -16,11 +16,13 @@ func (i *cacheItem) isExpired() bool {
 
 type cache struct {
 	mu    sync.RWMutex
+	ttl   int64
 	items map[string]cacheItem
 }
 
-func NewCache() cache {
+func NewCache(ttl int64) cache {
 	return cache{
+		ttl:   ttl,
 		items: make(map[string]cacheItem),
 	}
 }
@@ -40,7 +42,7 @@ func (c *cache) get(k string) (string, bool) {
 func (c *cache) set(k string, v string) {
 	item := cacheItem{
 		value:   v,
-		expires: time.Now().Unix() + 300,
+		expires: time.Now().Unix() + c.ttl,
 	}
 
 	c.mu.Lock()

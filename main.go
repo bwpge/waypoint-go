@@ -11,6 +11,7 @@ import (
 
 type configItem struct {
 	value     string
+	isFile    bool
 	isContent bool
 	redir     bool
 }
@@ -22,16 +23,24 @@ type Handler struct {
 	cache cache
 }
 
-func NewHandler(items map[string]yamlItem) *Handler {
+func NewHandler(ttl uint, items map[string]yamlItem) *Handler {
 	h := Handler{}
-	h.cache = NewCache()
+	h.cache = NewCache(int64(ttl))
 	h.items = make(itemMap)
 
 	for k, v := range items {
 		item := configItem{value: v.URL, redir: v.Redir}
+
 		if v.Content != "" {
 			item.value = v.Content
 			item.isContent = true
+		} else if v.File != "" {
+			content, err := readFileToString(v.File)
+			if err != nil {
+				log.Fatalf("failed to load config: %s", err)
+			}
+			item.value = content
+			item.isFile = true
 		}
 
 		if item.value == "" {
@@ -63,6 +72,10 @@ func (h *Handler) Handle(w http.ResponseWriter, r *http.Request) {
 		log.Debugf("%s - CONTENT - %s", ip, key)
 		fmt.Fprint(w, v.value)
 		return
+	} else if v.isFile {
+		log.Debugf("%s - FILE - %s", ip, key)
+		fmt.Fprint(w, v.value)
+		return
 	}
 
 	if v.redir {
@@ -91,22 +104,25 @@ func (h *Handler) Handle(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	pPort := flag.UintP("port", "p", 6920, "port to listen on")
-	pHost := flag.StringP(
+	var port, ttl uint
+	var host, confPath string
+	flag.UintVarP(&port, "port", "p", 0, "port to listen on")
+	flag.StringVarP(
+		&host,
 		"host",
 		"H",
 		"127.0.0.1",
 		"IP address or hostname to bind (use '-' for none)",
 	)
-	confPath := flag.StringP("config", "c", "", "explicit config file path instead of defaults")
+	flag.StringVarP(&confPath, "config", "c", "", "explicit config file path instead of defaults")
+	flag.UintVarP(&ttl, "cache-ttl", "t", 0, "seconds to keep url key responses cached")
 	flag.Parse()
 
-	p := *confPath
-	if p != "" {
-		if err := checkFile(p); err != nil {
-			log.Fatalf("could not load explicit config '%s': %s", p, err)
+	if confPath != "" {
+		if err := checkFile(confPath); err != nil {
+			log.Fatalf("could not load explicit config '%s': %s", confPath, err)
 		}
-		confPaths = []string{p}
+		confPaths = []string{confPath}
 	}
 
 	conf, err := loadConfig()
@@ -114,8 +130,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	port := *pPort
-	host := *pHost
 	if port == 0 && conf.Options.Port != 0 {
 		port = conf.Options.Port
 	}
@@ -125,9 +139,12 @@ func main() {
 	if host == "-" {
 		host = ""
 	}
+	if ttl == 0 && conf.Options.CacheTTL != 0 {
+		ttl = conf.Options.CacheTTL
+	}
 
 	addr := fmt.Sprintf("%s:%d", host, port)
-	h := NewHandler(conf.Items)
+	h := NewHandler(ttl, conf.Items)
 
 	http.HandleFunc("/{key}", h.Handle)
 	log.Infof("server listening on %s", addr)

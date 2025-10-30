@@ -12,14 +12,16 @@ import (
 
 type yamlItem struct {
 	Content string   `json:"content"`
+	File    string   `json:"file"`
 	URL     string   `json:"url"`
 	Redir   bool     `json:"redir"`
 	Alias   []string `json:"alias"`
 }
 
 type cliOptions struct {
-	Port uint   `json:"port"`
-	Host string `json:"host"`
+	Port     uint   `json:"port"`
+	Host     string `json:"host"`
+	CacheTTL uint   `json:"cache_ttl"`
 }
 
 type yamlConfig struct {

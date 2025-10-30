@@ -40,6 +40,15 @@ func checkFile(path string) error {
 	return nil
 }
 
+func readFileToString(path string) (string, error) {
+	bytes, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+
+	return string(bytes), nil
+}
+
 func fetch(url string) (string, error) {
 	r, err := http.Get(url)
 	if err != nil {

@@ -4,19 +4,24 @@
 options:
   host: 127.0.0.1
   port: 6920
+  cache_ttl: 600
 
 # Each item will map to an endpoint on the backend at /KEY. The item object is
 # expected to have the following form:
 #
 # KEY:
 #   content: <string>
+#   file: <string>
 #   url: <string>
 #   redir: <bool>
 #   alias:
 #     - <string>
 #     - ...
 #
-# Only content or url is required (content takes priority over url).
+# Only one of content, file, or url is required (priority is in that order).
+#
+# If `file` is used, the content is read and stored at start time. You will
+# need to restart to read changes to that file.
 #
 # If `redir` is false (or ommitted), the content of the url will be returned
 # with a GET request. If `redir` is true, the request will be redirected with
